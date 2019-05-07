@@ -1,0 +1,79 @@
+@charset "UTF-8";
+@font-face{
+	font-family: NanumGothic;  
+	src: url("./font/NanumGothic.woff") format("woff"); 
+}
+body {
+	text-align: center;
+	margin: 0 auto;
+	font-family: NanumGothic;
+}
+
+table {
+	margin: 0 auto;
+	text-align: center;
+	border: 1px solid;
+	border-collapse: collapse; 
+	width: 80%;
+}
+table th, table td {
+	border: 1px solid;
+	padding: 5px 10px;
+}
+table td a:hover{ font-weight: bold; }
+a:hover { cursor: pointer; }
+#list-top {
+	width: 79.8%;
+	padding-left: 10%;
+	padding-bottom: 20px;
+}
+
+.btn-fill, .btn-empty{
+	padding: 2px 10px;
+	border: 1px solid #1d63d3;
+	border-radius: 3px;
+	box-shadow: 2px 2px 2px #013ea0;
+}
+.btn-fill{
+	background-color: #1d63d3;
+	color: #ffffff;
+}
+.btn-empty{
+	background-color: #ffffff;
+	color: #1d63d3;
+}
+.small-btn-fill{
+	font-size: 13px;  font-weight: bold;
+	padding: 1px 10px;
+	border-radius: 3px;
+	background-color: #e5efff;
+	color: #357ff2;
+	border: 1px solid #c4dafc;
+	box-shadow: 2px 2px 2px #022d72;
+}
+
+#list-top a.btn-fill{
+	float: right;
+}
+
+a {
+	text-decoration: none;
+}
+a.btn-empty:visited {
+/* 	color: #1d63d3; */
+}
+
+img { vertical-align:  middle; }
+
+#attach-file, #delete-file { display: none; }
+.file-img { width:20px; height:20px; }
+
+input[type=text], input[type=password], textarea {
+	padding-left: 5px;
+}
+
+
+
+
+
+

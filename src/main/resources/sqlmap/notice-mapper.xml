@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="notice-mapper">
+
+<!-- root 가 원글의 root 와 같고 원글의  step 보다 더 큰게 있다면
+ step +1 로 변경한다. -->  
+<insert id="reply_insert">
+{
+	call declare begin
+ 	update notice set step = step + 1 
+ 	where root = #{root} and step  <![CDATA[ > ]]>  #{step}; 
+ 	 
+	insert into notice 
+		(id, root, step, indent, title, writer, content)
+	values ( seq_notice.nextval, #{root}, 
+			 #{step} + 1, #{indent} + 1,
+	         #{title}, #{writer}, #{content} );
+	end
+}	         
+</insert>
+
+<delete id="delete">
+	delete from notice where id = #{id}
+</delete>
+
+<update id="update">
+	update notice 
+	set title = #{title}, content = #{content},
+		filename = #{filename, jdbcType=VARCHAR}, 
+		filepath = #{filepath, jdbcType=VARCHAR}
+	where id = #{id}
+</update>
+
+<update id="read">
+	update notice set readcnt = readcnt + 1 where id=#{id}
+</update>
+
+<select id="detail" resultType="notice.NoticeVO">
+	select notice.*, (select name from member where userid=writer) name 
+	from notice where id=#{id}
+</select>
+
+<insert id="insert">
+	insert into notice (id, root, title, content, writer, filename, filepath)
+	values (seq_notice.nextval, seq_notice.currval, #{title}, #{content}, #{writer}, 
+			#{filename, jdbcType=VARCHAR}, #{filepath, jdbcType=VARCHAR})
+</insert>
+
+<select id="list" resultType="notice.NoticeVO">
+	select n.*, (select name from member where userid=writer) name from 
+	( select n.*, rownum no  
+	from (select * from notice <include refid="search"/> order by root, step desc) n
+	order by no desc ) n
+	where no between #{beginList} and #{endList}	
+</select>
+
+<select id="total" resultType="integer">
+	select count(*) from notice <include refid="search"/>
+</select>
+
+<sql id="search">
+	<if test="search=='all'">
+		where title like '%'||#{keyword}||'%'
+		or writer  like '%'||#{keyword}||'%'
+		or content  like '%'||#{keyword}||'%'		
+	</if>	
+	<if test="search=='writer' or search=='title' or search=='content'">
+		where ${search} like '%'||#{keyword}||'%'
+	</if>
+</sql>
+
+
+</mapper>

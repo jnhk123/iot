@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="visual-mapper">
+
+
+<select id="year_top3" resultType="common.LowerKey">
+<![CDATA[
+select department_name, sum(decode(recruit, '2001년', cnt, 0)) y2001,
+    sum(decode(recruit, '2002년', cnt, 0)) y2002,
+    sum(decode(recruit, '2003년', cnt, 0)) y2003,
+    sum(decode(recruit, '2004년', cnt, 0)) y2004,
+    sum(decode(recruit, '2005년', cnt, 0)) y2005,
+    sum(decode(recruit, '2006년', cnt, 0)) y2006,
+    sum(decode(recruit, '2007년', cnt, 0)) y2007,
+    sum(decode(recruit, '2008년', cnt, 0)) y2008
+from( select (select department_name from departments
+        where department_id = e.department_id) department_name, to_char(hire_date,'rrrr') ||'년' recruit, count(*) cnt
+from employees e
+where department_id in(
+select department_id from(
+select dense_rank() over(order by cnt desc) rank, department_id, cnt
+from (
+select department_id, count(*) cnt
+from employees
+group by department_id))
+where rank <= 3)
+group by department_id, to_char(hire_date,'rrrr'))
+group by department_name
+]]>
+</select>
+
+<select id="month_top3" resultType="common.LowerKey">
+<![CDATA[
+select department_name, sum(decode(recruit, '01월', cnt, 0)) m01,
+    sum(decode(recruit, '02월', cnt, 0)) m02,
+    sum(decode(recruit, '03월', cnt, 0)) m03,
+    sum(decode(recruit, '04월', cnt, 0)) m04,
+    sum(decode(recruit, '05월', cnt, 0)) m05,
+    sum(decode(recruit, '06월', cnt, 0)) m06,
+    sum(decode(recruit, '07월', cnt, 0)) m07,
+    sum(decode(recruit, '08월', cnt, 0)) m08,
+    sum(decode(recruit, '09월', cnt, 0)) m09,
+    sum(decode(recruit, '10월', cnt, 0)) m10,
+    sum(decode(recruit, '11월', cnt, 0)) m11,
+    sum(decode(recruit, '12월', cnt, 0)) m12
+from( select (select department_name from departments
+        where department_id = e.department_id) department_name, to_char(hire_date,'mm') ||'월' recruit, count(*) cnt
+from employees e
+where department_id in(
+select department_id from(
+select dense_rank() over(order by cnt desc) rank, department_id, cnt
+from (
+select department_id, count(*) cnt
+from employees
+group by department_id))
+where rank <= 3)
+group by department_id, to_char(hire_date,'mm'))
+group by department_name
+]]>
+</select>
+
+<select id="year_recruit" resultType="common.LowerKey">
+	select to_char(hire_date, 'rrrr')||'년' recruit, count(*) count
+	from employees
+	group by to_char(hire_date, 'rrrr')
+	order by 1
+</select>
+
+<select id="month_recruit" resultType="common.LowerKey">
+	select to_char(hire_date, 'mm')||'월' recruit, count(*) count
+	from employees
+	group by to_char(hire_date, 'mm')
+	order by 1
+</select>
+
+<select id="department_count" resultType="visual.EmployeeVO">
+	select nvl((select department_name from departments 
+        where department_id = e.department_id),'기타') department_name, count(*) count
+	from employees e
+	group by department_id
+	order by 1
+</select>
+
+</mapper>
